@@ -46,28 +46,36 @@ if __name__ == '__main__':
     else:
         e = TfPoseEstimator(get_graph_path(args.model), target_size=(432, 368), trt_bool=str2bool(args.tensorrt))
     logger.debug('cam read+')
+
     cam = cv2.VideoCapture(args.camera)
+    cam.set(cv2.CAP_PROP_FPS, 30)
+    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
     ret_val, image = cam.read()
     logger.info('cam image=%dx%d' % (image.shape[1], image.shape[0]))
+    
 
     while True:
         ret_val, image = cam.read()
 
-        logger.debug('image process+')
+        #logger.debug('image process+')
         humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=args.resize_out_ratio)
 
-        logger.debug('postprocess+')
+        #logger.debug('postprocess+')
         image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
 
-        logger.debug('show+')
-        cv2.putText(image,
-                    "FPS: %f" % (1.0 / (time.time() - fps_time)),
-                    (10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    (0, 255, 0), 2)
+        #logger.debug('show+')
+        fpsval = 1.0 / (time.time() - fps_time)
+
+        #logger.debug('fps=%f' % (fpsval))
+
+        cv2.putText(image, "FPS: %f" % (fpsval),(10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0), 2)
         cv2.imshow('tf-pose-estimation result', image)
+        
         fps_time = time.time()
         if cv2.waitKey(1) == 27:
             break
-        logger.debug('finished+')
+        #logger.debug('finished+')
 
     cv2.destroyAllWindows()
