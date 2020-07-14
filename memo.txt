@@ -1,2 +1,5 @@
 python3 run_webcam.py --model=mobilenet_v2_small --resize=320x176 --camera=0
+python3 run_video.py --model=mobilenet_v2_small --video="/home/share/movies/out1.mp4"
+
+python3 run_video3.py --model=mobilenet_v2_small --resize=320x176 --video="/home/share/movies/out1c.mp4"
 
